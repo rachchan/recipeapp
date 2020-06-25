@@ -1,4 +1,4 @@
-package persistence.entity;
+package com.qa.recipe.persistence.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
