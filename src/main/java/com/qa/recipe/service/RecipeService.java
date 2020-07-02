@@ -26,7 +26,9 @@ public class RecipeService {
 		this.repo = repo;
 		this.mapper = mapper;
 	}
-	
+	/**
+	 * Scrolls through RecipeDTO and gets different objects
+	 */
 	private RecipeDTO mapToDTO(Recipe recipe) {
 		return this.mapper.map(recipe, RecipeDTO.class);
 	}

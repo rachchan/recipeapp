@@ -1,16 +1,18 @@
 package com.qa.recipe.dto;
 
+import java.util.List;
+
 public class RecipeDTO {
 
 	private long id;
 	
 	private String name;
 	
-	private String ingredients;
+	private List <IngredientsDTO> ingredients;
 	
 	private double time;
 	
-	public RecipeDTO(long id, String name, String ingredients, double time) {
+	public RecipeDTO(long id, String name, List<IngredientsDTO> ingredients, double time) {
 		super();
 		this.setId(id);
 		this.setName(name);
@@ -38,11 +40,11 @@ public class RecipeDTO {
 		this.name = name;
 	}
 
-	public String getIngredients() {
+	public List<IngredientsDTO> getIngredients() {
 		return ingredients;
 	}
 
-	public void setIngredients(String ingredients) {
+	public void setIngredients(List<IngredientsDTO> ingredients) {
 		this.ingredients = ingredients;
 	}
 

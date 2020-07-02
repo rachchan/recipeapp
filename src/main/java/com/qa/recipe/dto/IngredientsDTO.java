@@ -1,44 +1,39 @@
-package com.qa.recipe.persistence.entity;
+package com.qa.recipe.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import com.qa.recipe.persistence.entity.Recipe;
 
-@Entity
-public class Ingredients {
-	
-	@Id
-	@GeneratedValue
+public class IngredientsDTO {
+
 	private long id;
-	
-	@Column(unique = true, nullable = false)
 	private String name;
-	
-	@ManyToOne (targetEntity = Recipe.class) 
 	private Recipe recipe;
-
+	
+	public IngredientsDTO(long id, String name, Recipe recipe) {
+		super();
+		this.setId(id);
+		this.setName(name);
+		this.setRecipe(recipe);
+	}
+	
+	public IngredientsDTO() {
+		
+	}
+	
 	public long getId() {
 		return id;
 	}
-
 	public void setId(long id) {
 		this.id = id;
 	}
-
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
 	public Recipe getRecipe() {
 		return recipe;
 	}
-
 	public void setRecipe(Recipe recipe) {
 		this.recipe = recipe;
 	}
