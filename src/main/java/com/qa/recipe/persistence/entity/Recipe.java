@@ -1,9 +1,12 @@
 package com.qa.recipe.persistence.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 
 @Entity
@@ -11,20 +14,21 @@ public class Recipe {
 
 		@Id
 		@GeneratedValue
-		Long id;
+		private long id;
 		
 		@Column(unique = true, nullable = false)
-		String name;
+		private String name;
 		
-		String ingredients;
+		@OneToMany(mappedBy = "recipe")
+		private List<Ingredients> ingredients;
 		
-		double time;
+		private double time;
 		
 		public Recipe() {
 			
 		}
 		
-		public Recipe(Long id, String name, String ingredients, double time) {
+		public Recipe(Long id, String name, List<Ingredients> ingredients, double time) {
 			super();
 			this.id = id;
 			this.name = name;
@@ -48,11 +52,11 @@ public class Recipe {
 			this.name = name;
 		}
 
-		public String getIngredients() {
+		public List<Ingredients> getIngredients() {
 			return ingredients;
 		}
 
-		public void setIngredients(String ingredients) {
+		public void setIngredients(List<Ingredients> ingredients) {
 			this.ingredients = ingredients;
 		}
 
