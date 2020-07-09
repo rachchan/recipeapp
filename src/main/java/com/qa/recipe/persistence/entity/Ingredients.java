@@ -14,7 +14,7 @@ public class Ingredients {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(unique = true, nullable = false)
+	@Column(unique = false, nullable = false)
 	private String name;
 	
 	@ManyToOne (targetEntity = Recipe.class) 

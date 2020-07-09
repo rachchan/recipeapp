@@ -1,6 +1,4 @@
-/*
-Recipe Class: Represents a recipe
-*/
+const BASE_URL = "http://localhost:8082";
 class Recipe {
     constructor(name, ingredients, time) {
         this.name = name;
@@ -8,18 +6,10 @@ class Recipe {
         this.time = time;
     }
 }
-
 /*
 UI Class: handles UI tasks
 */
 class UI {
-    static displayRecipes() {
-        axios({
-            method: 'get',
-            url: 'http://localhost:8082/recipe/read',
-            }).then(res => {
-                res.data.forEach(recipe => UI.addRecipeToList(recipe));
-    })}
 
     static addRecipeToList(recipe) {
         const list = document.querySelector('#recipe-list');
@@ -30,16 +20,10 @@ class UI {
             <td>${recipe.name}</td>
             <td>${recipe.ingredients}</td>
             <td>${recipe.time}</td>
-            <td><a href="#" class="btn btn-danger btn-sm delete">X</a></td>
+            <td><a href="#" class="btn btn-danger btn-sm delete"onclick = deleteRecipe(${recipe.id})>X</a></td>
         `;
 
         list.appendChild(row);
-    }
-
-    static deleteRecipe(el) {
-        if (el.classList.contains('delete')) {
-            el.parentElement.parentElement.remove();
-        }
     }
 
     static showAlert(message, className) {
@@ -59,77 +43,86 @@ class UI {
     }
 }
 
-
-/*
-Event: Display Recipes
+/* Add A Recipe 
 */
-document.addEventListener('DOMContentLoaded', UI.displayRecipes);
 
-/*
-Event: Add a Recipe
-*/
-document.querySelector('#recipeForm').addEventListener('submit', (e) => {
-    //prevent actual submit
-    e.preventDefault();
+(function () {
+    document.getElementById("recipeForm").addEventListener('submit', function (event) {
+        event.preventDefault();
 
-    //Get form values
-    const name = document.querySelector('#name').value;
-    const ingredients = document.querySelector('#ingredients').value;
-    const time = document.querySelector('#time').value;
+        const name = document.querySelector('#name').value;
+        const ingredients = document.querySelector('#ingredients').value;
+        const time = document.querySelector('#time').value;
 
-    //Validate
-    if (name === '' || ingredients === '' || time === '') {
-        UI.showAlert('Please fill in all fields', 'danger');
-    } else {
-        //Instantiate Recipe
-        const recipe = new Recipe(name, ingredients, time);
+        if (name === '' || ingredients === '' || time === '') {
+            UI.showAlert('Please fill in all fields', 'danger');
+        } else {
+            const recipe = new Recipe(name, ingredients, time);
 
-        //Add Recipe to UI
-        UI.addRecipeToList(recipe);
-
-        //Show success message
-        UI.showAlert('Recipe Added', 'success');
-
-        //Clear fields
-        UI.clearFields();
-
-        //send to api
-        axios({
-            method: 'post',
-            url: 'http://localhost:8082/recipe/createRecipe',
-            data: {
-                "name": name,
-                "time": time
-            }
-        }).then(res => {
             axios({
                 method: 'post',
-                url: 'http://localhost:8082/ingredient/createMulti/' + res.data.id,
-                data: ingredients.split(", ")
-            })
-        }).then(console.log(res)).catch(err => console.log(err));
-    } 
-
-
-/*
-Event: Remove a Recipe
-*/
-document.querySelector('#recipe-list').addEventListener('click', (e) => {
-
-    //Remove recipe from UI
-    UI.deleteRecipe(e.target)
-
-    //show success message
-    UI.showAlert('Recipe Removed', 'success');
-
-    //send to api
-    axios({
-        method: 'delete',
-        url: 'http://localhost:8082/recipe/delete/' + res.data.id,
-        headers: { 'Content-Type': 'application/json' },
-    }).then(function (response) {
-        console.log(response);
-    }).catch(function(response) {
-        console.log(response);
+                url: BASE_URL + '/recipe/create',
+                data: {
+                    "name": name,
+                    "time": time
+                }
+            }).then(res => {
+                axios({
+                    method: 'post',
+                    url: BASE_URL + '/ingredient/createMulti/' + res.data.id,
+                    data: ingredients.split(", ")
+                })
+            }).then(res => UI.showAlert('Recipe Added', 'success'))
+                .then(res => {
+                    UI.clearFields()
+                    UI.addRecipeToList(recipe)
+                    console.log(res)
+                }
+                )
+                .catch(err => console.log(err));
+        }
     });
-})})
+})();
+
+/* Read All Recipes
+*/ 
+(function () {
+    axios.get(BASE_URL + '/recipe/read')
+        .then(res => {
+         
+            res.data.forEach(recipe => {
+                recipe.ingredients = recipe.ingredients.map(ingredient => ingredient.name);
+                UI.addRecipeToList(recipe);
+               
+            })
+        }).catch(err => console.log(err))
+
+})();
+
+/* Update Recipes
+*/
+(function () {
+    document.getElementById("updateForm").addEventListener('submit', function (update) {
+        update.preventDefault();
+
+        const data = {};
+        for (let input of this) {
+            data[input.name] = input.value;
+        }
+        console.log(data);
+
+        axios.put(BASE_URL + '/recipe/update/{id}', data)
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+    });
+})();
+
+
+/* Delete Recipes
+*/
+    function deleteRecipe(id) {
+        axios.delete(`${BASE_URL}/recipe/delete/${id}`)
+            .then(res => console.log(res))
+            .then(res => location.reload())
+            .catch(err => console.log(err));
+    }

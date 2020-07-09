@@ -2,6 +2,7 @@ package com.qa.recipe.persistence.entity;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +21,7 @@ public class Recipe {
 		@Column(unique = true, nullable = false)
 		private String name;
 		
-		@OneToMany(mappedBy = "recipe")
+		@OneToMany(mappedBy = "recipe", cascade = CascadeType.REMOVE)
 		private List<Ingredients> ingredients;
 		
 		@Column
