@@ -3,27 +3,32 @@ package com.qa.recipe.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import com.qa.recipe.dto.IngredientsDTO;
 import com.qa.recipe.exceptions.NotFoundException;
 import com.qa.recipe.persistence.entity.Ingredients;
+import com.qa.recipe.persistence.entity.Recipe;
 import com.qa.recipe.persistence.repository.IngredientsRepository;
+import com.qa.recipe.persistence.repository.RecipeRepository;
 
 
 @Service
 public class IngredientsService {
 	
-	@Autowired
+
 	private IngredientsRepository repo;
+	private RecipeRepository reciperepo;
 	private ModelMapper mapper;
 	
-	public IngredientsService(IngredientsRepository repo, ModelMapper mapper) {
+	public IngredientsService(IngredientsRepository repo, RecipeRepository reciperepo, ModelMapper mapper) {
 		super();
 		this.repo = repo;
+		this.reciperepo = reciperepo;
 		this.mapper = mapper;
 	}
 	/**
@@ -84,6 +89,20 @@ public class IngredientsService {
 	public boolean delete(Long id) {
 		this.repo.deleteById(id);
 		return this.repo.existsById(id);
+	}
+	
+	
+	public List<IngredientsDTO> createMulti(List<String> names, Long id) {
+		Recipe recipe = this.reciperepo.findById(id).orElseThrow(() -> new NotFoundException());
+		return 
+		names.stream().map(name -> {
+			Ingredients ingredient = new Ingredients();
+			ingredient.setName(name);
+			ingredient.setRecipe(recipe);
+			return ingredient;
+		}).map(ingredient -> this.repo.save(ingredient)).map(this::mapToDTO).collect(Collectors.toList());
+		
+	
 	}
 	
 	

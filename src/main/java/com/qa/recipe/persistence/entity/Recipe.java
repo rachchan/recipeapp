@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -13,7 +14,7 @@ import javax.persistence.OneToMany;
 public class Recipe {
 
 		@Id
-		@GeneratedValue
+		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		private long id;
 		
 		@Column(unique = true, nullable = false)
@@ -22,6 +23,7 @@ public class Recipe {
 		@OneToMany(mappedBy = "recipe")
 		private List<Ingredients> ingredients;
 		
+		@Column
 		private double time;
 		
 		public Recipe() {

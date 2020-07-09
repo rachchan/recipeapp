@@ -37,6 +37,11 @@ public class IngredientsController {
 		return new ResponseEntity<IngredientsDTO>(this.service.create(ingredient), HttpStatus.CREATED);
 	}
 	
+	@PostMapping("/createMulti/{id}")
+	public ResponseEntity<List<IngredientsDTO>> create(@RequestBody List<String>names, @PathVariable Long id) {
+		return new ResponseEntity<List<IngredientsDTO>>(this.service.createMulti(names, id), HttpStatus.CREATED);
+	}
+	
 	@GetMapping("/read/{name}")
 	public ResponseEntity<IngredientsDTO> readOne(@PathVariable String name) {
 		return ResponseEntity.ok(this.service.read(name));
