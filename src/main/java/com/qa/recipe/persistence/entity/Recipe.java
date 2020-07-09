@@ -2,9 +2,11 @@ package com.qa.recipe.persistence.entity;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -13,15 +15,16 @@ import javax.persistence.OneToMany;
 public class Recipe {
 
 		@Id
-		@GeneratedValue
+		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		private long id;
 		
 		@Column(unique = true, nullable = false)
 		private String name;
 		
-		@OneToMany(mappedBy = "recipe")
+		@OneToMany(mappedBy = "recipe", cascade = CascadeType.REMOVE)
 		private List<Ingredients> ingredients;
 		
+		@Column
 		private double time;
 		
 		public Recipe() {
@@ -68,11 +71,13 @@ public class Recipe {
 			this.time = time;
 		}
 
+		
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + ((id == null) ? 0 : id.hashCode());
+			result = prime * result + (int) (id ^ (id >>> 32));
 			result = prime * result + ((ingredients == null) ? 0 : ingredients.hashCode());
 			result = prime * result + ((name == null) ? 0 : name.hashCode());
 			long temp;
@@ -90,10 +95,7 @@ public class Recipe {
 			if (getClass() != obj.getClass())
 				return false;
 			Recipe other = (Recipe) obj;
-			if (id == null) {
-				if (other.id != null)
-					return false;
-			} else if (!id.equals(other.id))
+			if (id != other.id)
 				return false;
 			if (ingredients == null) {
 				if (other.ingredients != null)
