@@ -69,9 +69,9 @@ public class RecipeService {
 		
 		Recipe toUpdate = optRecipe.orElseThrow(() -> new NotFoundException());
 		
-		toUpdate.setIngredients(recipe.getIngredients());
+	//	toUpdate.setIngredients(recipe.getIngredients());
 		toUpdate.setName(recipe.getName());
-		toUpdate.setTime(recipe.getTime());
+	//	toUpdate.setTime(recipe.getTime());
 		
 		Recipe updated = this.repo.save(toUpdate);
 		
