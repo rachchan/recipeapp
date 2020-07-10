@@ -1,4 +1,6 @@
 const BASE_URL = "http://localhost:8082";
+const updatedname = document.getElementById('updatedname'); 
+
 class Recipe {
     constructor(name, ingredients, time) {
         this.name = name;
@@ -20,6 +22,7 @@ class UI {
             <td>${recipe.name}</td>
             <td>${recipe.ingredients}</td>
             <td>${recipe.time}</td>
+            <td><a href="#updateForm" class="btn btn-link"onClick = updateRecipe(${recipe.id})>Edit Name</a></td>
             <td><a href="#" class="btn btn-danger btn-sm delete"onclick = deleteRecipe(${recipe.id})>X</a></td>
         `;
 
@@ -77,8 +80,7 @@ class UI {
                     UI.clearFields()
                     UI.addRecipeToList(recipe)
                     console.log(res)
-                }
-                )
+                })
                 .catch(err => console.log(err));
         }
     });
@@ -101,22 +103,25 @@ class UI {
 
 /* Update Recipes
 */
-(function () {
+function updateRecipe(id) {
+    updatedname.disabled = false;
+    updatedname.focus();
+    
     document.getElementById("updateForm").addEventListener('submit', function (update) {
         update.preventDefault();
-
-        const data = {};
-        for (let input of this) {
-            data[input.name] = input.value;
-        }
-        console.log(data);
-
-        axios.put(BASE_URL + '/recipe/update/{id}', data)
-            .then(res => console.log(res))
-            .catch(err => console.log(err));
-    });
-})();
-
+       
+        const name = updatedname.value;
+        axios({
+            method: 'put',
+            url: `${BASE_URL}/recipe/update/${id}`,
+            data: {
+                "name": name
+            }
+        }).then(res => console.log(res))
+        .then(res => location.reload())
+        .catch(err => console.log(err));
+})
+}
 
 /* Delete Recipes
 */
