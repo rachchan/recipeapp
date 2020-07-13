@@ -19,6 +19,15 @@ public class Ingredients {
 	
 	@ManyToOne (targetEntity = Recipe.class) 
 	private Recipe recipe;
+	
+	public Ingredients() {
+		
+	}
+	
+	public Ingredients(String name) {
+		super();
+		this.name = name;
+	}
 
 	public long getId() {
 		return id;
