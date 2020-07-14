@@ -17,23 +17,25 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qa.recipe.dto.IngredientsDTO;
-import com.qa.recipe.persistence.entity.Ingredients;
+
+import com.qa.recipe.dto.RecipeDTO;
+
+import com.qa.recipe.persistence.entity.Recipe;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class IngredientControllerIntegrationTest {
+public class RecipeControllerIntegrationTest {
 
 	@Autowired
 	private MockMvc mockMVC;
 	
-	private Ingredients ingredient;
+	private Recipe recipe;
 	
-	private IngredientsDTO savedIngredient;
+	private RecipeDTO savedRecipe;
 	
-	private IngredientsDTO mapToDTO(Ingredients ingredient) {
-		return new ModelMapper().map(ingredient, IngredientsDTO.class);
+	private RecipeDTO mapToDTO(Recipe recipe) {
+		return new ModelMapper().map(recipe, RecipeDTO.class);
 	}
 	
 
@@ -42,21 +44,21 @@ public class IngredientControllerIntegrationTest {
 	
 	@Before
 	public void init() {
-		this.ingredient = new Ingredients("mozzarella");
-		Ingredients savedIngredient = new Ingredients(ingredient.getName());
-		savedIngredient.setId(1L);
-		this.savedIngredient= this.mapToDTO(savedIngredient);
+		this.recipe = new Recipe("Pizza", 2);
+		Recipe savedRecipe = new Recipe(recipe.getName(), recipe.getTime());
+		savedRecipe.setId(1L);
+		this.savedRecipe= this.mapToDTO(savedRecipe);
 	}
 	
 	@Test
 	public void testCreate() throws Exception {
-		MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.post("/ingredient/create");
+		MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.post("/recipe/create");
 		reqBuilder.accept(MediaType.APPLICATION_JSON);
 		reqBuilder.contentType(MediaType.APPLICATION_JSON);
-		reqBuilder.content(this.mapper.writeValueAsString(ingredient));
+		reqBuilder.content(this.mapper.writeValueAsString(recipe));
 		
 		ResultMatcher matchStatus = MockMvcResultMatchers.status().isCreated();
-		ResultMatcher matchContent = MockMvcResultMatchers.content().json(this.mapper.writeValueAsString(savedIngredient));
+		ResultMatcher matchContent = MockMvcResultMatchers.content().json(this.mapper.writeValueAsString(savedRecipe));
 	
 		this.mockMVC.perform(reqBuilder).andExpect(matchStatus).andExpect(matchContent);
 	}

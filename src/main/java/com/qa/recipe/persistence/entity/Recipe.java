@@ -30,7 +30,18 @@ public class Recipe {
 		public Recipe() {
 			
 		}
+		public Recipe(String name, double time) {
+			this.name = name;
+			this.time = time;
+		}
 		
+		public Recipe(String name, List<Ingredients> ingredients, double time) {
+			this.name = name;
+			this.ingredients = ingredients;
+			this.time = time;
+		}
+		
+
 		public Recipe(Long id, String name, List<Ingredients> ingredients, double time) {
 			super();
 			this.id = id;
