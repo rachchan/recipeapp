@@ -1,9 +1,7 @@
 package com.qa.recipe.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
@@ -23,85 +21,89 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qa.recipe.dto.IngredientsDTO;
+
+import com.qa.recipe.dto.RecipeDTO;
 import com.qa.recipe.persistence.entity.Ingredients;
-import com.qa.recipe.persistence.repository.IngredientsRepository;
+import com.qa.recipe.persistence.entity.Recipe;
+import com.qa.recipe.persistence.repository.RecipeRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class IngredientControllerIntegrationTest {
+public class RecipeControllerIntegrationTest {
 
 	@Autowired
 	private MockMvc mockMVC;
 	
-	private Ingredients ingredient;
+	private Recipe recipe;
 	
-	private IngredientsDTO savedIngredient;
+	private RecipeDTO savedRecipe;
 	
-	private IngredientsDTO mapToDTO(Ingredients ingredient) {
-		return new ModelMapper().map(ingredient, IngredientsDTO.class);
+	private RecipeDTO mapToDTO(Recipe recipe) {
+		return new ModelMapper().map(recipe, RecipeDTO.class);
 	}
 	
 	@Autowired
-	private ObjectMapper mapper;
+	private RecipeRepository repo;
 	
+
 	@Autowired
-	private IngredientsRepository repo;
+	private ObjectMapper mapper;
 	
 	@Before
 	public void init() {
 		this.repo.deleteAll();
-		this.ingredient = new Ingredients("mozzarella");
-		Ingredients savedIngredient = this.repo.save(ingredient);
-		this.savedIngredient= this.mapToDTO(savedIngredient);
+		this.recipe = new Recipe("Pizza", 2);
+//		Recipe savedRecipe = new Recipe(recipe.getName(), recipe.getTime());
+//		savedRecipe.setId(1L);
+		Recipe savedRecipe = this.repo.save(recipe);
+		this.savedRecipe= this.mapToDTO(savedRecipe);
 	}
 	
 	@Test
 	public void testCreate() throws Exception {
-	
-		MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.post("/ingredient/create");
+		MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.post("/recipe/create");
 		reqBuilder.accept(MediaType.APPLICATION_JSON);
 		reqBuilder.contentType(MediaType.APPLICATION_JSON);
-		reqBuilder.content(this.mapper.writeValueAsString(ingredient));
+		reqBuilder.content(this.mapper.writeValueAsString(recipe));
 		
 		ResultMatcher matchStatus = MockMvcResultMatchers.status().isCreated();
-		ResultMatcher matchContent = MockMvcResultMatchers.content().json(this.mapper.writeValueAsString(savedIngredient));
+		ResultMatcher matchContent = MockMvcResultMatchers.content().json(this.mapper.writeValueAsString(savedRecipe));
 	
 		this.mockMVC.perform(reqBuilder).andExpect(matchStatus).andExpect(matchContent);
 	}
 	
 	@Test
 	public void testReadOneSuccess() throws Exception {
-		MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.get("/ingredient/read/"+ this.savedIngredient.getName());
+		MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.get("/recipe/read/"+ this.savedRecipe.getName());
 		reqBuilder.accept(MediaType.APPLICATION_JSON);
 		reqBuilder.contentType(MediaType.APPLICATION_JSON);
-		reqBuilder.content(this.mapper.writeValueAsString(ingredient));
+		reqBuilder.content(this.mapper.writeValueAsString(recipe));
 		
 		ResultMatcher matchStatus = MockMvcResultMatchers.status().isOk();
-		ResultMatcher matchContent = MockMvcResultMatchers.content().json(this.mapper.writeValueAsString(savedIngredient));
+		ResultMatcher matchContent = MockMvcResultMatchers.content().json(this.mapper.writeValueAsString(savedRecipe));
 	
 		this.mockMVC.perform(reqBuilder).andExpect(matchStatus).andExpect(matchContent);
+
 	}
-	
 	@Test
-	public void testUpdateIngredient() throws Exception {
-		Ingredients newIngredient = new Ingredients("Fried Rice");
-		Ingredients updatedIngredient = new Ingredients(newIngredient.getName());
-		updatedIngredient.setId(this.savedIngredient.getId());
+	public void testUpdateRecipe() throws Exception {
+		Recipe newRecipe = new Recipe("Fried Rice", 1);
+		Recipe updatedRecipe = new Recipe(newRecipe.getName(), newRecipe.getTime());
+	
 		
+		String result = 
 				this.mockMVC
-				.perform(request(HttpMethod.PUT, "/ingredient/update/" + this.savedIngredient.getId()).accept(MediaType.APPLICATION_JSON)
-						.contentType(MediaType.APPLICATION_JSON).content(this.mapper.writeValueAsString(newIngredient)))
-				.andExpect(status().isAccepted()).andExpect(content().json(this.mapper.writeValueAsString(mapToDTO(updatedIngredient))));
+				.perform(request(HttpMethod.PUT, "/recipe/update/" + this.savedRecipe.getId()).accept(MediaType.APPLICATION_JSON)
+						.contentType(MediaType.APPLICATION_JSON).content(this.mapper.writeValueAsString(newRecipe)))
+				.andExpect(status().isAccepted()).andReturn().getResponse().getContentAsString();
 		
+		assertEquals(this.mapper.writeValueAsString(updatedRecipe), result);
 	}
 	
 	@Test
-	public void testDeleteIngredient() throws Exception {
-		this.mockMVC.perform(request(HttpMethod.DELETE, "/ingredient/delete/" + this.ingredient.getId())).andExpect(status().isNoContent());
+	public void testDeleteRecipe() throws Exception {
+		this.mockMVC.perform(request(HttpMethod.DELETE, "/recipe/delete/" + recipe.getId())).andExpect(status().isNoContent());
 	}
-	
 }
