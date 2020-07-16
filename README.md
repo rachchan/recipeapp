@@ -15,7 +15,6 @@ Eclipse IDE https://www.eclipse.org/downloads/
 Spring Tools for Eclipse https://spring.io/tools
 Maven https://maven.apache.org/, you will need Apache Maven 3.6.3.
 JDK and JRE 1.8
-
 ```
 
 ### Installing
