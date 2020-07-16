@@ -2,7 +2,10 @@ package com.qa.recipe.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -89,17 +92,16 @@ public class RecipeControllerIntegrationTest {
 	}
 	@Test
 	public void testUpdateRecipe() throws Exception {
-		Recipe newRecipe = new Recipe("Fried Rice", 1);
-		Recipe updatedRecipe = new Recipe(newRecipe.getName(), newRecipe.getTime());
-	
+		Recipe newRecipe = new Recipe("Fried Rice");
+		Recipe updatedRecipe = new Recipe(newRecipe.getName(), 2);
+		updatedRecipe.setId(this.savedRecipe.getId());
+		updatedRecipe.setIngredients(new ArrayList<>());
 		
-		String result = 
 				this.mockMVC
 				.perform(request(HttpMethod.PUT, "/recipe/update/" + this.savedRecipe.getId()).accept(MediaType.APPLICATION_JSON)
 						.contentType(MediaType.APPLICATION_JSON).content(this.mapper.writeValueAsString(newRecipe)))
-				.andExpect(status().isAccepted()).andReturn().getResponse().getContentAsString();
+				.andExpect(status().isAccepted()).andExpect(content().json(this.mapper.writeValueAsString(mapToDTO(updatedRecipe))));
 		
-		assertEquals(this.mapper.writeValueAsString(updatedRecipe), result);
 	}
 	
 	@Test
