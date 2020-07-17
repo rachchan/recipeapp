@@ -1,5 +1,6 @@
 package com.qa.recipe.persistence.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -22,12 +23,16 @@ public class Recipe {
 		private String name;
 		
 		@OneToMany(mappedBy = "recipe", cascade = CascadeType.REMOVE)
-		private List<Ingredients> ingredients;
+		private List<Ingredients> ingredients = new ArrayList<>();
 		
 		@Column
 		private double time;
 		
 		public Recipe() {
+			
+		}
+		public Recipe(String name) {
+			this.name = name;
 			
 		}
 		public Recipe(String name, double time) {
