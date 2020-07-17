@@ -30,7 +30,7 @@ public class IngredientsController {
 	public IngredientsController(IngredientsService service) {
 		super();
 		this.service= service;
-	}
+	} 
 	
 	@PostMapping("/create")
 	public ResponseEntity<IngredientsDTO> create(@RequestBody Ingredients ingredient) {
